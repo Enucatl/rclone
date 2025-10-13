@@ -1,0 +1,44 @@
+services:
+
+  rclone:
+    image: rclone/rclone:latest
+    container_name: rclone-webdav-service
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./config:/config/rclone
+      - rclone_cache:/data/cache
+    labels:
+      - "checkmk_monitor=true"
+    environment:
+      - B2_BUCKET_NAME
+      - RCLONE_CONFIG_B2REMOTE_ACCOUNT
+      - RCLONE_CONFIG_B2REMOTE_KEY
+      - WEBDAV_USER
+      - WEBDAV_PASS
+    command:
+      - serve
+      - webdav
+      - "b2remote:${B2_BUCKET_NAME}/rclone"
+      - --addr=:8000
+      - --user=${WEBDAV_USER}
+      - --pass=${WEBDAV_PASS}
+      - --vfs-cache-mode=full
+      - --cache-dir=/data/cache
+      - --vfs-cache-max-size=20G
+      - -vv
+    depends_on:
+      - cloudflared
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN
+    command: tunnel run
+    labels:
+      - "checkmk_monitor=true"
+
+volumes:
+  rclone_cache:
