@@ -7,7 +7,7 @@ services:
     security_opt:
       - no-new-privileges:true
     volumes:
-      - ./config:/config/rclone
+      - /nfs_exports/home/user/docker/rclone/config:/config/rclone
       - rclone_cache:/data/cache
     labels:
       - "checkmk_monitor=true"
