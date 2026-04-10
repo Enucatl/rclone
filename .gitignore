@@ -1,4 +1,5 @@
 .env
+secrets/
 
 # Downloading .gitignore for Terraform...
 # Local .terraform directories

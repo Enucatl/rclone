@@ -39,10 +39,16 @@ services:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
     environment:
-      - TUNNEL_TOKEN
+      - TUNNEL_TOKEN_FILE=/run/secrets/tunnel_token
+    secrets:
+      - tunnel_token
     command: tunnel run
     labels:
       - "checkmk_monitor=true"
 
 volumes:
   rclone_cache:
+
+secrets:
+  tunnel_token:
+    file: ./secrets/tunnel_token
