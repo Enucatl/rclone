@@ -1,11 +1,13 @@
 services:
 
   rclone:
+    extends:
+      file: ../compose-security-baseline/hardening.yml
+      service: hardened-medium
     image: rclone/rclone:latest
+    cpu_shares: 256
     container_name: rclone-webdav-service
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
     volumes:
       - ./config:/config/rclone
       - rclone_cache:/data/cache
@@ -27,11 +29,13 @@ services:
       - --vfs-cache-mode=full
       - --cache-dir=/data/cache
       - --vfs-cache-max-size=20G
-      - -vv
     depends_on:
       - cloudflared
 
   cloudflared:
+    extends:
+      file: ../compose-security-baseline/hardening.yml
+      service: hardened-small
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
     environment:
